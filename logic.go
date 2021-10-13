@@ -19,10 +19,10 @@ func info() BattlesnakeInfoResponse {
 	log.Println("INFO")
 	return BattlesnakeInfoResponse{
 		APIVersion: "1",
-		Author:     "",        // TODO: Your Battlesnake username
-		Color:      "#888888", // TODO: Personalize
-		Head:       "default", // TODO: Personalize
-		Tail:       "default", // TODO: Personalize
+		Author:     "vicmanbrile", // TODO: Your Battlesnake username
+		Color:      "#991f00",     // TODO: Personalize
+		Head:       "default",     // TODO: Personalize
+		Tail:       "default",     // TODO: Personalize
 	}
 }
 
@@ -52,25 +52,56 @@ func move(state GameState) BattlesnakeMoveResponse {
 
 	// Step 0: Don't let your Battlesnake move back in on it's own neck
 	myHead := state.You.Body[0] // Coordinates of your head
-	myNeck := state.You.Body[1] // Coordinates of body piece directly behind your head (your "neck")
-	if myNeck.X < myHead.X {
-		possibleMoves["left"] = false
-	} else if myNeck.X > myHead.X {
+	myNeck := state.You.Body[1]
+
+	if positionX(myNeck, myHead) {
 		possibleMoves["right"] = false
-	} else if myNeck.Y < myHead.Y {
-		possibleMoves["down"] = false
-	} else if myNeck.Y > myHead.Y {
+	} else {
+		possibleMoves["left"] = false
+	}
+
+	if positionY(myNeck, myHead) {
 		possibleMoves["up"] = false
+	} else {
+		possibleMoves["down"] = false
 	}
 
 	// TODO: Step 1 - Don't hit walls.
 	// Use information in GameState to prevent your Battlesnake from moving beyond the boundaries of the board.
-	// boardWidth := state.Board.Width
-	// boardHeight := state.Board.Height
+	boardWidth := state.Board.Width
+	boardHeight := state.Board.Height
+
+	if boardWidth == myHead.X-1 {
+		possibleMoves["right"] = false
+	} else if myHead.X == 0 {
+		possibleMoves["left"] = false
+	}
+
+	if boardHeight == myHead.Y+1 {
+		possibleMoves["down"] = false
+	} else if myHead.Y == 0 {
+		possibleMoves["up"] = false
+	}
 
 	// TODO: Step 2 - Don't hit yourself.
 	// Use information in GameState to prevent your Battlesnake from colliding with itself.
 	// mybody := state.You.Body
+
+	for _, snake := range state.Board.Snakes {
+		for _, part := range snake.Body {
+			if positionX(part, myHead) {
+				possibleMoves["right"] = false
+			} else {
+				possibleMoves["left"] = false
+			}
+
+			if positionY(part, myHead) {
+				possibleMoves["up"] = false
+			} else {
+				possibleMoves["down"] = false
+			}
+		}
+	}
 
 	// TODO: Step 3 - Don't collide with others.
 	// Use information in GameState to prevent your Battlesnake from colliding with others.
@@ -99,4 +130,12 @@ func move(state GameState) BattlesnakeMoveResponse {
 	return BattlesnakeMoveResponse{
 		Move: nextMove,
 	}
+}
+
+func positionX(myNeck, myHead Coord) bool {
+	return (myNeck.X > myHead.X)
+}
+
+func positionY(myNeck, myHead Coord) bool {
+	return (myNeck.Y > myHead.Y)
 }
