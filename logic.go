@@ -55,19 +55,15 @@ func move(state GameState) BattlesnakeMoveResponse {
 	Neck := state.You.Body[1]
 
 	if Head.X > Neck.X {
-		possibleMoves["right"] = true
 		possibleMoves["left"] = false
 	} else {
 		possibleMoves["right"] = false
-		possibleMoves["left"] = true
 	}
 
 	if Head.Y > Neck.Y {
-		possibleMoves["up"] = true
 		possibleMoves["down"] = false
 	} else {
 		possibleMoves["up"] = false
-		possibleMoves["down"] = true
 	}
 
 	// TODO: Step 1 - Don't hit walls.
@@ -77,13 +73,13 @@ func move(state GameState) BattlesnakeMoveResponse {
 
 	if possibleMoves["right"] == true && Head.X == boardWidth {
 		possibleMoves["right"] = false
-	} else if possibleMoves["left"] == true && Head.X == 1 {
+	} else if possibleMoves["left"] == true && Head.X == 0 {
 		possibleMoves["left"] = false
 	}
 
 	if possibleMoves["up"] == true && Head.Y == boardHeight {
 		possibleMoves["up"] = false
-	} else if possibleMoves["down"] == true && Head.Y == 1 {
+	} else if possibleMoves["down"] == true && Head.Y == 0 {
 		possibleMoves["down"] = false
 	}
 
